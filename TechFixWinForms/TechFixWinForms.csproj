@@ -56,6 +56,7 @@
       <HintPath>..\packages\System.CodeDom.9.0.2\lib\net462\System.CodeDom.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SqlClient, Version=4.6.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SqlClient.4.9.0\lib\net462\System.Data.SqlClient.dll</HintPath>
@@ -108,37 +109,85 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdminLoginForm.cs">
+    <Compile Include="Components\AdminCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\AdminCard.Designer.cs">
+      <DependentUpon>AdminCard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\OrderCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\OrderCard.Designer.cs">
+      <DependentUpon>OrderCard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ProductCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ProductCard.Designer.cs">
+      <DependentUpon>ProductCard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SupplierCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\SupplierCard.Designer.cs">
+      <DependentUpon>SupplierCard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Connection\ConnectionManager.cs" />
+    <Compile Include="Forms\AdminLoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AdminLoginForm.Designer.cs">
+    <Compile Include="Forms\AdminLoginForm.Designer.cs">
       <DependentUpon>AdminLoginForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="AdminSignUp.cs">
+    <Compile Include="Forms\AdminSignUp.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AdminSignUp.Designer.cs">
+    <Compile Include="Forms\AdminSignUp.Designer.cs">
       <DependentUpon>AdminSignUp.cs</DependentUpon>
     </Compile>
     <Compile Include="ApiHelper.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\ProductController.cs" />
+    <Compile Include="Controllers\SupplierController.cs" />
+    <Compile Include="Models\Admin.cs" />
+    <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\Product.cs" />
+    <Compile Include="Models\Supplier.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SuplierProfile.cs">
+    <Compile Include="Forms\SuplierProfile.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SuplierProfile.Designer.cs">
+    <Compile Include="Forms\SuplierProfile.Designer.cs">
       <DependentUpon>SuplierProfile.cs</DependentUpon>
     </Compile>
-    <Compile Include="TechFixWindows.cs">
+    <Compile Include="Forms\TechFixWindows.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TechFixWindows.Designer.cs">
+    <Compile Include="Forms\TechFixWindows.Designer.cs">
       <DependentUpon>TechFixWindows.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="AdminLoginForm.resx">
+    <Compile Include="Services\AdminService.cs" />
+    <Compile Include="Services\ApiService.cs" />
+    <Compile Include="Services\OrderService.cs" />
+    <Compile Include="Services\ProductService.cs" />
+    <Compile Include="Services\SupplierService.cs" />
+    <Compile Include="TechFixDBDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TechFixDBDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Utils\Config.cs" />
+    <Compile Include="Utils\ValidationHelper.cs" />
+    <EmbeddedResource Include="Components\AdminCard.resx">
+      <DependentUpon>AdminCard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AdminLoginForm.resx">
       <DependentUpon>AdminLoginForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="AdminSignUp.resx">
+    <EmbeddedResource Include="Forms\AdminSignUp.resx">
       <DependentUpon>AdminSignUp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -150,10 +199,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="SuplierProfile.resx">
+    <EmbeddedResource Include="Forms\SuplierProfile.resx">
       <DependentUpon>SuplierProfile.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TechFixWindows.resx">
+    <EmbeddedResource Include="Forms\TechFixWindows.resx">
       <DependentUpon>TechFixWindows.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
@@ -166,9 +215,21 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="TechFixDBDataSet.xsc">
+      <DependentUpon>TechFixDBDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="TechFixDBDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>TechFixDBDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="TechFixDBDataSet.xss">
+      <DependentUpon>TechFixDBDataSet.xsd</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

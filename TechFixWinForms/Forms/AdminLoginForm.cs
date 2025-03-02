@@ -36,5 +36,12 @@ namespace TechFixWinForms
         {
 
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            //AdminSignUp loginForm = new AdminSignUp();
+            //AdminSignUp.Show();
+            //this.Hide();  // Hides the current form
+        }
     }
 }

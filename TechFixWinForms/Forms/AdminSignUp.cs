@@ -8,11 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using TechFixWinForms.Connection;
 
 namespace TechFixWinForms
 {
     public partial class AdminSignUp : Form
     {
+        SqlConnection con;
         public AdminSignUp()
         {
             InitializeComponent();
@@ -27,7 +29,17 @@ namespace TechFixWinForms
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            try
+            {
+                con = ConnectionManager.GetConnection();
+                con.Open();
+                MessageBox.Show("Connection successful!");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.ToString());
+            }
         }
+
     }
 }
