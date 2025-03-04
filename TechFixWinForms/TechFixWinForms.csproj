@@ -134,6 +134,7 @@
       <DependentUpon>SupplierCard.cs</DependentUpon>
     </Compile>
     <Compile Include="Connection\ConnectionManager.cs" />
+    <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Forms\AdminLoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -152,6 +153,7 @@
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\SupplierController.cs" />
     <Compile Include="Models\Admin.cs" />
+    <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Supplier.cs" />
@@ -171,6 +173,7 @@
     </Compile>
     <Compile Include="Services\AdminService.cs" />
     <Compile Include="Services\ApiService.cs" />
+    <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\OrderService.cs" />
     <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\SupplierService.cs" />
@@ -198,6 +201,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="Forms\SuplierProfile.resx">
       <DependentUpon>SuplierProfile.cs</DependentUpon>
@@ -230,6 +234,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logoTechFix.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

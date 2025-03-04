@@ -43,5 +43,10 @@ namespace TechFixWinForms
             //AdminSignUp.Show();
             //this.Hide();  // Hides the current form
         }
+
+        private void guna2HtmlLabel15_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

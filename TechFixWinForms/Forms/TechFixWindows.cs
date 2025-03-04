@@ -56,5 +56,25 @@ namespace TechFixWinForms
         {
 
         }
+
+        private void guna2HtmlLabel10_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void guna2VScrollBar2_Scroll(object sender, ScrollEventArgs e)
+        {
+
+        }
+
+        private void guna2HtmlLabel21_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void guna2ComboBox4_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
