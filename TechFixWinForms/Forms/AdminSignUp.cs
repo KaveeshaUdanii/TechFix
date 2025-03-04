@@ -10,12 +10,14 @@ using System.Windows.Forms;
 using System.Data.SqlClient;
 using TechFixWinForms.Connection;
 using TechFixWinForms.Forms;
+using System.Xml.Linq;
 
 namespace TechFixWinForms
 {
     public partial class AdminSignUp : Form
     {
         SqlConnection con;
+        SqlCommand cmd;
         public AdminSignUp()
         {
             InitializeComponent();
@@ -53,13 +55,59 @@ namespace TechFixWinForms
         {
             try
             {
+                // Establish Connection
                 con = ConnectionManager.GetConnection();
                 con.Open();
-                MessageBox.Show("Connection successful!");
+
+                // Get user input from text fields
+                string adminId = Guid.NewGuid().ToString(); 
+                string name = txtName.Text.Trim();
+                string email = txtEmail.Text.Trim();
+                string password = txtPassword.Text.Trim();
+                string contactNo = txtContact.Text.Trim();
+
+                // Validate input fields
+                if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email) ||
+                    string.IsNullOrEmpty(password) || string.IsNullOrEmpty(contactNo))
+                {
+                    MessageBox.Show("Please fill in all fields.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // SQL Query to insert into the Admin table
+                string query = "INSERT INTO Admin (AID, Name, Email, Password, ContactNo) VALUES (@AID, @Name, @Email, @Password, @ContactNo)";
+
+                cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@AID", adminId);
+                cmd.Parameters.AddWithValue("@Name", name);
+                cmd.Parameters.AddWithValue("@Email", email);
+                cmd.Parameters.AddWithValue("@Password", password);
+                cmd.Parameters.AddWithValue("@ContactNo", contactNo);
+
+                int rowsAffected = cmd.ExecuteNonQuery();
+
+                if (rowsAffected > 0)
+                {
+                    MessageBox.Show("Admin registered successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.Hide(); // Hide sign-up form after success
+                    AdminLoginForm loginForm = new AdminLoginForm();
+                    loginForm.Show(); // Show login form
+                }
+                else
+                {
+                    MessageBox.Show("Error occurred while saving data.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: " + ex.ToString());
+                MessageBox.Show($"Database Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close(); // Close the connection
+                }
             }
         }
 

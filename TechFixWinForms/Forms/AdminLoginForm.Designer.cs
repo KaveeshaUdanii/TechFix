@@ -90,6 +90,7 @@
             this.txtPassword.SelectedText = "";
             this.txtPassword.Size = new System.Drawing.Size(285, 36);
             this.txtPassword.TabIndex = 58;
+            this.txtPassword.UseSystemPasswordChar = true;
             // 
             // guna2HtmlLabel1
             // 
