@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 using TechFixWinForms.Connection;
+using TechFixWinForms.Forms;
 
 namespace TechFixWinForms
 {
