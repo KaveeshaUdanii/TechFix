@@ -209,5 +209,56 @@ namespace TechFixWinForms
         {
 
         }
+
+        private async void AddC_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Get input values
+                string categoryName = guna2TextBox9.Text.Trim();
+                
+
+                if (string.IsNullOrEmpty(categoryName))
+                {
+                    MessageBox.Show("All fields are required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Create supplier object
+                var supplier = new
+                {
+                    Name = categoryName,
+                   
+                };
+
+                string json = JsonSerializer.Serialize(supplier);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                // Send POST request to API
+                HttpResponseMessage httpResponseMessage = await client.PostAsync("https://localhost:7201/api/category/add", content);
+                HttpResponseMessage response = httpResponseMessage;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("Category added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    MessageBox.Show($"Failed to add category: {errorMessage}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        
+
+        private void CID_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
