@@ -13,11 +13,11 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using TechFixWinForms.Models;
 using System.Text.Json;
 using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 using System.Net.Http.Json;
-
+using TechFixWinForms.Connection;
+using Guna.Charts.WinForms;
 
 namespace TechFixWinForms
 {
@@ -28,6 +28,16 @@ namespace TechFixWinForms
         public TechFixWindows()
         {
             InitializeComponent();
+            this.DoubleBuffered = true;
+            DisplaySuppliers();
+            DisplayProducts();
+            DisplayCategories();
+            DisplayOrders();
+            LoadTotalOrders();
+            LoadTotalSuppliers();
+            LoadTotalProducts();
+            LoadTopSuppliersChart();
+            LoadTopOrderedProductsChart();
         }
 
         public class Supplier
@@ -506,6 +516,388 @@ catch (Exception ex)
 MessageBox.Show("Error: " + ex.Message);
 }
 }*/
+
+
+        // display data ---------------------------------------------------------------------------------------------------
+        private void DisplaySuppliers()
+        {
+            string connectionString = "Server=DESKTOP-8D8VJB1\\SQLEXPRESS;Database=TechFixDB;Trusted_Connection=True;MultipleActiveResultSets=true;";
+            SqlConnection con = new SqlConnection(connectionString);
+
+            try
+            {
+                // Open connection
+                con.Open();
+
+                // Prepare SQL query
+                string query = "SELECT * FROM Supplier"; 
+                SqlCommand cmd = new SqlCommand(query, con);
+
+                // Execute the query
+                var reader = cmd.ExecuteReader();
+
+                // Load data into DataTable
+                DataTable table = new DataTable();
+                table.Load(reader);
+
+                // Bind the DataTable to DataGridView
+                guna2DataGridView1.DataSource = table;
+
+                // Optionally, set the column headers manually (if you need to customize them)
+                foreach (DataGridViewColumn column in guna2DataGridView1.Columns)
+                {
+                    column.HeaderText = table.Columns[column.Index].ColumnName;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+            finally
+            {
+                // Close connection
+                con.Close();
+            }
+        }
+
+
+
+
+        private void DisplayProducts()
+        {
+            string connectionString = "Server=DESKTOP-8D8VJB1\\SQLEXPRESS;Database=TechFixDB;Trusted_Connection=True;MultipleActiveResultSets=true;";
+            SqlConnection con = new SqlConnection(connectionString);
+
+            try
+            {
+                // Open connection
+                con.Open();
+
+                // Prepare SQL query
+                string query = "SELECT * FROM Product";  // Replace with your actual table name
+                SqlCommand cmd = new SqlCommand(query, con);
+
+                // Execute the query
+                var reader = cmd.ExecuteReader();
+
+                // Load data into DataTable
+                DataTable table = new DataTable();
+                table.Load(reader);
+
+                // Bind the DataTable to the second DataGridView
+                guna2DataGridView2.DataSource = table;
+
+                // Optionally, set the column headers manually (if you need to customize them)
+                foreach (DataGridViewColumn column in guna2DataGridView2.Columns)
+                {
+                    column.HeaderText = table.Columns[column.Index].ColumnName;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+            finally
+            {
+                // Close connection
+                con.Close();
+            }
+        }
+
+
+
+        private void DisplayCategories()
+        {
+            string connectionString = "Server=DESKTOP-8D8VJB1\\SQLEXPRESS;Database=TechFixDB;Trusted_Connection=True;MultipleActiveResultSets=true;";
+            SqlConnection con = new SqlConnection(connectionString);
+
+            try
+            {
+                // Open connection
+                con.Open();
+
+                // Prepare SQL query
+                string query = "SELECT * FROM Category";  // Replace with your actual table name
+                SqlCommand cmd = new SqlCommand(query, con);
+
+                // Execute the query
+                var reader = cmd.ExecuteReader();
+
+                // Load data into DataTable
+                DataTable table = new DataTable();
+                table.Load(reader);
+
+                // Bind the DataTable to the third DataGridView
+                guna2DataGridView4.DataSource = table;
+
+                // Optionally, set the column headers manually (if you need to customize them)
+                foreach (DataGridViewColumn column in guna2DataGridView4.Columns)
+                {
+                    column.HeaderText = table.Columns[column.Index].ColumnName;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+            finally
+            {
+                // Close connection
+                con.Close();
+            }
+        }
+
+
+
+
+        private void DisplayOrders()
+        {
+            string connectionString = "Server=DESKTOP-8D8VJB1\\SQLEXPRESS;Database=TechFixDB;Trusted_Connection=True;MultipleActiveResultSets=true;";
+            SqlConnection con = new SqlConnection(connectionString);
+
+            try
+            {
+                // Open connection
+                con.Open();
+
+                // Prepare SQL query
+                string query = "SELECT * FROM [Order]";  // Replace with your actual table name
+                SqlCommand cmd = new SqlCommand(query, con);
+
+                // Execute the query
+                var reader = cmd.ExecuteReader();
+
+                // Load data into DataTable
+                DataTable table = new DataTable();
+                table.Load(reader);
+
+                // Bind the DataTable to the fourth DataGridView
+                guna2DataGridView3.DataSource = table;
+
+                // Optionally, set the column headers manually (if you need to customize them)
+                foreach (DataGridViewColumn column in guna2DataGridView3.Columns)
+                {
+                    column.HeaderText = table.Columns[column.Index].ColumnName;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+            finally
+            {
+                // Close connection
+                con.Close();
+            }
+        }
+
+        private void guna2Panel1_Paint(object sender, PaintEventArgs e)
+        {
+            // Get the panel graphics
+            Graphics g = e.Graphics;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            // Create rounded rectangle path
+            int radius = 50; // Adjust the curve radius
+            System.Drawing.Rectangle rect = guna2Panel1.ClientRectangle;
+            rect.Width -= 1;
+            rect.Height -= 1;
+
+            System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath();
+            path.AddArc(rect.X, rect.Y, radius, radius, 180, 90); // Top-left corner
+            path.AddArc(rect.Right - radius, rect.Y, radius, radius, 270, 90); // Top-right corner
+            path.AddArc(rect.Right - radius, rect.Bottom - radius, radius, radius, 0, 90); // Bottom-right corner
+            path.AddArc(rect.X, rect.Bottom - radius, radius, radius, 90, 90); // Bottom-left corner
+            path.CloseFigure();
+
+            // Apply gradient colors
+            System.Drawing.Drawing2D.LinearGradientBrush brush = new System.Drawing.Drawing2D.LinearGradientBrush(
+                rect,
+                Color.FromArgb(255, 94, 148, 255),  // Start Color (Blue)
+                Color.FromArgb(255, 0, 212, 255),   // End Color (Cyan)
+                System.Drawing.Drawing2D.LinearGradientMode.ForwardDiagonal
+            );
+
+            g.FillPath(brush, path); // Fill gradient
+            g.DrawPath(new Pen(Color.FromArgb(200, 255, 255, 255), 2), path); // Add a border
+        }
+
+
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void gunaChart1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void guna2HtmlLabel29_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        public async Task LoadTotalOrders()
+        {
+            string apiUrl = "https://localhost:7201/api/Order/total-orders";  
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = await client.GetAsync(apiUrl);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string result = await response.Content.ReadAsStringAsync();
+                        int totalOrders = JsonConvert.DeserializeObject<int>(result);
+                        guna2HtmlLabel29.Text = " " + totalOrders;
+                    }
+                    else
+                    {
+                        guna2HtmlLabel29.Text = "Error loading orders!";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("API Error: " + ex.Message);
+            }
+        }
+        public async Task LoadTotalSuppliers()
+        {
+            string apiUrl = "https://localhost:7201/api/Supplier/total-suppliers";  
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = await client.GetAsync(apiUrl);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string result = await response.Content.ReadAsStringAsync();
+                        int totalSuppliers = JsonConvert.DeserializeObject<int>(result);
+                        guna2HtmlLabel30.Text = " " + totalSuppliers;
+                    }
+                    else
+                    {
+                        guna2HtmlLabel30.Text = "Error loading suppliers!";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("API Error: " + ex.Message);
+            }
+        }
+
+        public async Task LoadTotalProducts()
+        {
+            string apiUrl = "https://localhost:7201/api/Product/total-products";  
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = await client.GetAsync(apiUrl);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string result = await response.Content.ReadAsStringAsync();
+                        int totalProducts = JsonConvert.DeserializeObject<int>(result);
+                        guna2HtmlLabel31.Text = " " + totalProducts;
+                    }
+                    else
+                    {
+                        guna2HtmlLabel31.Text = "Error loading products!";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("API Error: " + ex.Message);
+            }
+        }
+
+        private async Task LoadTopSuppliersChart()
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    string apiUrl = "https://localhost:7201/api/Supplier/top-suppliers"; 
+                    HttpResponseMessage response = await client.GetAsync(apiUrl);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string jsonString = await response.Content.ReadAsStringAsync();
+
+                        // Deserialize JSON response
+                        List<SupplierData> topSuppliers = JsonConvert.DeserializeObject<List<SupplierData>>(jsonString);
+
+                        // Clear old data
+                        gunaBarDataset1.DataPoints.Clear(); // Make sure this dataset is added in Guna UI Designer
+
+                        // Add new data points
+                        foreach (var supplier in topSuppliers)
+                        {
+                            gunaBarDataset1.DataPoints.Add(new LPoint(supplier.Name, supplier.TotalOrders));
+                        }
+
+                        // Refresh the chart
+                        gunaChart1.Datasets.Clear();
+                        gunaChart1.Datasets.Add(gunaBarDataset1);
+                        gunaChart1.Update(); // Refresh chart to show latest data
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+
+        private async void LoadTopOrderedProductsChart()
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    string apiUrl = "https://localhost:7201/api/Product/top-products";
+                    HttpResponseMessage response = await client.GetAsync(apiUrl);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string json = await response.Content.ReadAsStringAsync();
+                        var topProducts = JsonConvert.DeserializeObject<List<TopProduct>>(json);
+
+                        // Clear previous data
+                        gunaPieDataset1.DataPoints.Clear();
+                        gunaChart2.Datasets.Clear();
+
+                        foreach (var product in topProducts)
+                        {
+                            gunaPieDataset1.DataPoints.Add(product.Name, product.TotalQuantity);
+                        }
+
+                        // Add dataset to chart
+                        gunaChart2.Datasets.Add(gunaPieDataset1);
+
+                        // Refresh chart
+                        gunaChart2.Update();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to load top ordered products.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+
+        
 
     }
 }

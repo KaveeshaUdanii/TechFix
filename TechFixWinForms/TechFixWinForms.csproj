@@ -53,6 +53,9 @@
     <Reference Include="Bunifu.UI.WinForms, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Bunifu.UI.WinForms.8.0.0\lib\net472\Bunifu.UI.WinForms.dll</HintPath>
     </Reference>
+    <Reference Include="Guna.Charts.WinForms, Version=1.1.0.0, Culture=neutral, PublicKeyToken=8b9d14aa5142e261, processorArchitecture=MSIL">
+      <HintPath>..\packages\Guna.Charts.WinForms.1.1.0\lib\net472\Guna.Charts.WinForms.dll</HintPath>
+    </Reference>
     <Reference Include="Guna.UI2, Version=2.0.4.7, Culture=neutral, PublicKeyToken=8b9d14aa5142e261, processorArchitecture=MSIL">
       <HintPath>..\packages\Guna.UI2.WinForms.2.0.4.7\lib\net472\Guna.UI2.dll</HintPath>
     </Reference>
@@ -229,31 +232,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Components\AdminCard.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Components\AdminCard.Designer.cs">
-      <DependentUpon>AdminCard.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Components\OrderCard.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Components\OrderCard.Designer.cs">
-      <DependentUpon>OrderCard.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Components\ProductCard.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Components\ProductCard.Designer.cs">
-      <DependentUpon>ProductCard.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Components\SupplierCard.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Components\SupplierCard.Designer.cs">
-      <DependentUpon>SupplierCard.cs</DependentUpon>
-    </Compile>
     <Compile Include="Connection\ConnectionManager.cs" />
+    <Compile Include="Connection\SupplierData.cs" />
+    <Compile Include="Connection\TopProduct.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Forms\AdminLoginForm.cs">
       <SubType>Form</SubType>
@@ -272,11 +253,6 @@
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\SupplierController.cs" />
-    <Compile Include="Models\Admin.cs" />
-    <Compile Include="Models\Category.cs" />
-    <Compile Include="Models\Order.cs" />
-    <Compile Include="Models\Product.cs" />
-    <Compile Include="Models\Supplier.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\SuplierProfile.cs">
@@ -291,22 +267,11 @@
     <Compile Include="Forms\TechFixWindows.Designer.cs">
       <DependentUpon>TechFixWindows.cs</DependentUpon>
     </Compile>
-    <Compile Include="Services\AdminService.cs" />
-    <Compile Include="Services\ApiService.cs" />
-    <Compile Include="Services\CategoryService.cs" />
-    <Compile Include="Services\OrderService.cs" />
-    <Compile Include="Services\ProductService.cs" />
-    <Compile Include="Services\SupplierService.cs" />
     <Compile Include="TechFixDBDataSet.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>TechFixDBDataSet.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Utils\Config.cs" />
-    <Compile Include="Utils\ValidationHelper.cs" />
-    <EmbeddedResource Include="Components\AdminCard.resx">
-      <DependentUpon>AdminCard.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\AdminLoginForm.resx">
       <DependentUpon>AdminLoginForm.cs</DependentUpon>
     </EmbeddedResource>
