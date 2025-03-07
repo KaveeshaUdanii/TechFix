@@ -56,6 +56,43 @@ namespace TechFix_API.Controllers
             return Ok(new { message = "Product added successfully!", productID = product.PID });
         }
 
+        // GET api/product/total-products
+        [HttpGet("total-products")]
+        public async Task<IActionResult> GetTotalProducts()
+        {
+            try
+            {
+                int totalProducts = await _context.Product.CountAsync();
+                return Ok(totalProducts);  // Return total count as JSON
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server Error: " + ex.Message);
+            }
+        }
+
+        [HttpGet("top-products")]
+        public async Task<IActionResult> GetTopOrderedProducts()
+        {
+            var topProducts = await _context.Order
+                .GroupBy(o => o.PID)
+                .Select(g => new
+                {
+                    ProductID = g.Key,
+                    TotalQuantity = g.Sum(o => o.Quantity)
+                })
+                .OrderByDescending(p => p.TotalQuantity)
+                .Take(5)
+                .Join(_context.Product, o => o.ProductID, p => p.PID, (o, p) => new
+                {
+                    p.Name,
+                    o.TotalQuantity
+                })
+                .ToListAsync();
+
+            return Ok(topProducts);
+        }
+
 
     }
 }
