@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -52,5 +53,24 @@ namespace TechFixAPI.Controllers
 
             return Ok(new { message = "Order placed successfully!", orderID = order.OID });
         }
+
+
+        // GET api/order/total-orders
+        [HttpGet("total-orders")]
+        public async Task<IActionResult> GetTotalOrders()
+        {
+            try
+            {
+                int totalOrders = await _context.Order.CountAsync();
+                return Ok(totalOrders);  // Return the total count as JSON
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server Error: " + ex.Message);
+            }
+        }
+
+
+
     }
 }
