@@ -12,5 +12,7 @@ namespace TechFixAPI.Models
 
         public DbSet<Product> Product { get; set; }
 
+        public DbSet<Order> Order { get; set; }
+
     }
 }
