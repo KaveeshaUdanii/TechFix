@@ -38,6 +38,7 @@ namespace TechFixWinForms
             LoadTotalProducts();
             LoadTopSuppliersChart();
             LoadTopOrderedProductsChart();
+
         }
 
         public class Supplier
@@ -897,7 +898,9 @@ MessageBox.Show("Error: " + ex.Message);
             }
         }
 
-        
+        private void guna2TextBox1_TextChanged(object sender, EventArgs e)
+        {
 
+        }
     }
 }
