@@ -16,6 +16,7 @@ using System.Windows.Forms;
 using TechFixWinForms.Models;
 using System.Text.Json;
 using JsonSerializer = Newtonsoft.Json.JsonSerializer;
+using System.Net.Http.Json;
 
 
 namespace TechFixWinForms
@@ -74,7 +75,7 @@ namespace TechFixWinForms
 
         private void guna2NumericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-
+            
         }
 
         private void guna2ComboBox5_SelectedIndexChanged(object sender, EventArgs e)
@@ -104,7 +105,7 @@ namespace TechFixWinForms
 
         private void guna2ComboBox4_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            
         }
 
         private async void addS_Click(object sender, EventArgs e)
@@ -402,37 +403,109 @@ namespace TechFixWinForms
         {
             //LoadSuppliers();
         }
-        /*
-        private void LoadSuppliers()
+
+        private async void PlaceOrderButton_Click(object sender, EventArgs e)
         {
-            guna2ComboBox2.Items.Clear(); // Clear existing items
+            // Ensure that ProductID and SupplierID are selected
+            var productId = ProductID.SelectedItem?.ToString();  // Get selected ProductID
+            var supplierId = SupplierID.SelectedItem?.ToString();  // Get selected SupplierID
 
-            string connectionString = ConfigurationManager.ConnectionStrings["ConString"].ConnectionString;
-
-            try
+            // Validate the input to make sure PID and SID are selected
+            if (string.IsNullOrEmpty(productId) || string.IsNullOrEmpty(supplierId))
             {
-                using (SqlConnection con = new SqlConnection(connectionString))
-                {
-                    con.Open();
+                MessageBox.Show("Please select both Product ID and Supplier ID.");
+                return;
+            }
 
-                    string query = "SELECT Name FROM Supplier";
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+            var quantity = (int)guna2NumericUpDown1.Value;  // Ensure quantity is an integer
+            var orderDate = guna2DateTimePicker1.Value.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");  // ISO 8601 format for OrderDate with milliseconds
+
+            // Create an object for the order in the correct format
+            var order = new
+            {
+                pid = productId,  // Product ID
+                quantity = quantity,
+                sid = supplierId,  // Supplier ID
+                orderDate = orderDate  // Order Date
+            };
+
+            // Convert the object to JSON
+            var jsonOrder = JsonConvert.SerializeObject(order);
+
+            // Set up HttpClient
+            using (var client = new HttpClient())
+            {
+                // Set the base URL for your API
+                client.BaseAddress = new Uri("https://localhost:7201");
+
+                // Create the content for the request with the appropriate Content-Type header
+                var content = new StringContent(jsonOrder, Encoding.UTF8, "application/json");
+
+                try
+                {
+                    // Make the POST request to the API
+                    var response = await client.PostAsync("/api/Order/add", content);
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                guna2ComboBox2.Items.Add(reader["Name"].ToString());
-                            }
-                        }
+                        MessageBox.Show("Order placed successfully!");
+                    }
+                    else
+                    {
+                        var errorMessage = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show("Failed to place order: " + errorMessage);
                     }
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("An error occurred: " + ex.Message);
+                }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
-            }
-        }*/
+        }
+
+        private void guna2HtmlLabel23_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+
+
+        private void ProductID_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        /*
+private void LoadSuppliers()
+{
+guna2ComboBox2.Items.Clear(); // Clear existing items
+
+string connectionString = ConfigurationManager.ConnectionStrings["ConString"].ConnectionString;
+
+try
+{
+using (SqlConnection con = new SqlConnection(connectionString))
+{
+  con.Open();
+
+  string query = "SELECT Name FROM Supplier";
+  using (SqlCommand cmd = new SqlCommand(query, con))
+  {
+      using (SqlDataReader reader = cmd.ExecuteReader())
+      {
+          while (reader.Read())
+          {
+              guna2ComboBox2.Items.Add(reader["Name"].ToString());
+          }
+      }
+  }
+}
+}
+catch (Exception ex)
+{
+MessageBox.Show("Error: " + ex.Message);
+}
+}*/
 
     }
 }
