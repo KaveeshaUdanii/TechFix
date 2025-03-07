@@ -76,5 +76,67 @@ namespace TechFixAPI.Controllers
             // Return the suppliers as JSON
             return Ok(suppliers);
         }
+
+
+
+        // GET: api/suppliers
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Supplier>>> GetSuppliers()
+        {
+            var suppliers = await _context.Supplier.ToListAsync();
+            return Ok(suppliers);
+        }
+
+        // If needed, you can also have an endpoint to get a single supplier by SID
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Supplier>> GetSupplier(string id)
+        {
+            var supplier = await _context.Supplier.FindAsync(id);
+
+            if (supplier == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(supplier);
+        }
+
+        // GET api/supplier/total-suppliers
+        [HttpGet("total-suppliers")]
+        public async Task<IActionResult> GetTotalSuppliers()
+        {
+            try
+            {
+                int totalSuppliers = await _context.Supplier.CountAsync();
+                return Ok(totalSuppliers);  // Return total count as JSON
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server Error: " + ex.Message);
+            }
+        }
+
+        [HttpGet("top-suppliers")]
+        public async Task<IActionResult> GetTopSuppliers()
+        {
+            var topSuppliers = await _context.Order
+                .GroupBy(o => o.SID)
+                .Select(g => new
+                {
+                    SupplierID = g.Key,
+                    TotalOrders = g.Count()
+                })
+                .OrderByDescending(s => s.TotalOrders)
+                .Take(5)
+                .Join(_context.Supplier, o => o.SupplierID, s => s.SID, (o, s) => new
+                {
+                    s.Name,
+                    o.TotalOrders
+                })
+                .ToListAsync();
+
+            return Ok(topSuppliers);
+        }
+
     }
 }
