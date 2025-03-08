@@ -95,7 +95,60 @@ namespace TechFix_API.Controllers
 
 
 
-        
+        // GET: api/Product/get-product/{pid}
+        [HttpGet("get-product/{pid}")]
+        public async Task<IActionResult> GetProductById(string pid)
+        {
+            // Find the product by PID
+            var product = await _context.Product.FirstOrDefaultAsync(p => p.PID == pid);
+
+            if (product == null)
+            {
+                return NotFound(new { message = "Product not found." });
+            }
+
+            // Return product details
+            return Ok(product);
+        }
+
+        [HttpPut("update/{pid}")]
+        public async Task<IActionResult> UpdateProduct(string pid, [FromBody] Product product)
+        {
+            var existingProduct = await _context.Product.FindAsync(pid);
+            if (existingProduct == null)
+            {
+                return NotFound();
+            }
+
+            existingProduct.Name = product.Name;
+            existingProduct.Price = product.Price;
+            existingProduct.Stock = product.Stock;
+            existingProduct.Description = product.Description;
+            existingProduct.CID = product.CID;
+            existingProduct.SID = product.SID;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(existingProduct);
+        }
+
+        [HttpDelete("delete/{productId}")]
+        public async Task<IActionResult> DeleteProduct(string productId)
+        {
+            // Find the product by PID
+            var product = await _context.Product.FirstOrDefaultAsync(p => p.PID == productId);
+
+            if (product == null)
+            {
+                return NotFound(new { message = "Product not found." });
+            }
+
+            // Remove the product from the database
+            _context.Product.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Product deleted successfully." });
+        }
 
 
     }
