@@ -10,5 +10,6 @@ namespace TechFixAPI.Models
         [Required]
         public string Name { get; set; }
 
+        
     }
 }
