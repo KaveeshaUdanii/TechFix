@@ -138,5 +138,68 @@ namespace TechFixAPI.Controllers
             return Ok(topSuppliers);
         }
 
+
+        [HttpGet("get-supplier/{sid}")]
+        public async Task<IActionResult> GetSupplierById(string sid)
+        {
+            if (string.IsNullOrEmpty(sid))
+            {
+                return BadRequest(new { message = "SID is required." });
+            }
+
+            var supplier = await _context.Supplier
+                .Where(s => s.SID == sid)
+                .FirstOrDefaultAsync();
+
+            if (supplier == null)
+            {
+                return NotFound(new { message = "Supplier not found." });
+            }
+
+            return Ok(supplier);
+        }
+
+        [HttpPut("update-supplier/{sid}")]
+        public async Task<IActionResult> UpdateSupplier(string sid, [FromBody] Supplier updatedSupplier)
+        {
+            if (updatedSupplier == null || sid != updatedSupplier.SID)
+            {
+                return BadRequest(new { message = "Invalid supplier data." });
+            }
+
+            var supplier = await _context.Supplier.FindAsync(sid);
+            if (supplier == null)
+            {
+                return NotFound(new { message = "Supplier not found." });
+            }
+
+            // Update supplier details
+            supplier.Name = updatedSupplier.Name;
+            supplier.Email = updatedSupplier.Email;
+            supplier.ContactNo = updatedSupplier.ContactNo;
+
+            _context.Supplier.Update(supplier);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Supplier updated successfully!" });
+        }
+
+
+        [HttpDelete("delete-supplier/{sid}")]
+        public async Task<IActionResult> DeleteSupplier(string sid)
+        {
+            var supplier = await _context.Supplier.FindAsync(sid);
+            if (supplier == null)
+            {
+                return NotFound(new { message = "Supplier not found." });
+            }
+
+            _context.Supplier.Remove(supplier);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Supplier deleted successfully." });
+        }
+
+
     }
 }
