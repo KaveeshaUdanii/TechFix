@@ -64,6 +64,16 @@ namespace TechFixWinForms
             public string CID { get; set; }  
             public string Name { get; set; }
         }
+        public class Product
+        {
+            public string PID { get; set; }
+            public string Name { get; set; }
+            public int Price { get; set; }
+            public int Stock { get; set; }
+            public string Description { get; set; }
+            public string CID { get; set; } // Category ID
+            public string SID { get; set; } // Supplier ID
+        }
 
         private void tabPage2_Click(object sender, EventArgs e)
         {
@@ -313,16 +323,19 @@ namespace TechFixWinForms
                     if (response.IsSuccessStatusCode)
                     {
                         MessageBox.Show("Product added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ClearFields();
                     }
                     else
                     {
                         string responseContent = await response.Content.ReadAsStringAsync();
                         MessageBox.Show("Failed to add product. " + response.ReasonPhrase + "\n" + responseContent, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ClearFields();
                     }
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error: " + ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ClearFields();
                 }
             }
         }
@@ -985,7 +998,67 @@ namespace TechFixWinForms
 
         private async void SearchP_Click(object sender, EventArgs e)
         {
-            
+            string pid = ProID.Text.Trim();  // Get the PID entered by Admin
+
+            if (string.IsNullOrEmpty(pid))
+            {
+                MessageBox.Show("Please enter the Product ID.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://localhost:7201/api/");  // Change to your API base address
+
+                    // Get Product details based on the entered PID
+                    HttpResponseMessage response = await client.GetAsync($"Product/get-product/{pid}");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string jsonData = await response.Content.ReadAsStringAsync();
+                        Product product = JsonConvert.DeserializeObject<Product>(jsonData);
+
+                        // Populate textboxes with product data
+                        PName.Text = product.Name;
+                        PPrice.Text = product.Price.ToString();
+                        PQuantity.Text = product.Stock.ToString();
+                        PDescription.Text = product.Description;
+
+                        // Get Category Name and Supplier Name from their respective IDs
+                        var categoryResponse = await client.GetAsync($"Category/get-category/{product.CID}");
+                        var supplierResponse = await client.GetAsync($"Supplier/get-supplier/{product.SID}");
+
+                        if (categoryResponse.IsSuccessStatusCode && supplierResponse.IsSuccessStatusCode)
+                        {
+                            string categoryData = await categoryResponse.Content.ReadAsStringAsync();
+                            string supplierData = await supplierResponse.Content.ReadAsStringAsync();
+
+                            Category category = JsonConvert.DeserializeObject<Category>(categoryData);
+                            Supplier supplier = JsonConvert.DeserializeObject<Supplier>(supplierData);
+                            
+
+                            // Set the ComboBox items
+                            guna2ComboBox1.SelectedItem = category.Name;
+                            guna2ComboBox2.SelectedItem = supplier.Name;
+
+                        }
+                        else
+                        {
+                            MessageBox.Show("Category or Supplier not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Product not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error fetching product details: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private async void SearchCategory_Click(object sender, EventArgs e)
@@ -1113,6 +1186,161 @@ namespace TechFixWinForms
             catch (Exception ex)
             {
                 MessageBox.Show("Error deleting category: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void guna2HtmlLabel41_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void guna2HtmlLabel40_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private async void UpdateProduct_Click(object sender, EventArgs e)
+        {
+            // Get the PID (this should not be changed)
+            string pid = ProID.Text.Trim();
+
+            // Validate PID
+            if (string.IsNullOrWhiteSpace(pid))
+            {
+                MessageBox.Show("Please enter the Product ID.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Get user input values
+            string productName = PName.Text;
+            string productPrice = PPrice.Text;
+            string productQuantity = PQuantity.Text;
+            string productDescription = PDescription.Text;
+            string categoryName = guna2ComboBox1.SelectedItem?.ToString();
+            string supplierName = guna2ComboBox2.SelectedItem?.ToString();
+
+            // Validate inputs
+            if (string.IsNullOrWhiteSpace(productName) ||
+                string.IsNullOrWhiteSpace(productPrice) ||
+                string.IsNullOrWhiteSpace(productQuantity) ||
+                string.IsNullOrWhiteSpace(productDescription) ||
+                string.IsNullOrWhiteSpace(categoryName) ||
+                string.IsNullOrWhiteSpace(supplierName))
+            {
+                MessageBox.Show("Please fill in all fields.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Convert category and supplier names to their respective IDs
+            string categoryID = GetCategoryID(categoryName);
+            string supplierID = GetSupplierID(supplierName);
+
+            if (string.IsNullOrWhiteSpace(categoryID) || string.IsNullOrWhiteSpace(supplierID))
+            {
+                MessageBox.Show("Invalid Category or Supplier.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Convert Price to integer (or decimal if appropriate)
+            if (!decimal.TryParse(productPrice, out decimal price))
+            {
+                MessageBox.Show("Invalid price format.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Create product object with the same PID, and updated information
+            var product = new
+            {
+                PID = pid,  // Keep the same PID
+                Name = productName,
+                Stock = int.Parse(productQuantity),
+                Price = (int)price, // If API expects an integer, convert it
+                SID = supplierID,
+                Description = productDescription,
+                CID = categoryID
+            };
+
+            // Convert object to JSON
+            string json = JsonConvert.SerializeObject(product);
+            Console.WriteLine(json); // Debugging: print the JSON string
+
+            StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            // Send HTTP PUT request
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    HttpResponseMessage response = await client.PutAsync($"https://localhost:7201/api/product/update/{pid}", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Product updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ClearFields();  // Optional: Clear the fields after successful update
+                    }
+                    else
+                    {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show("Failed to update product. " + response.ReasonPhrase + "\n" + responseContent, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void ClearFields()
+        {
+            // Clear the textboxes
+            PName.Clear();
+            PPrice.Clear();
+            PQuantity.Clear();
+            PDescription.Clear();
+
+            // Reset the combo boxes
+            guna2ComboBox1.SelectedIndex = -1; // Reset category combo box
+            guna2ComboBox2.SelectedIndex = -1; // Reset supplier combo box
+
+            // Reset the PID text box (if you want to clear this too)
+            ProID.Clear();
+        }
+
+        private async void DeleteProduct_Click(object sender, EventArgs e)
+        {
+            string productId = ProID.Text.Trim();
+
+            // Validate the PID
+            if (string.IsNullOrEmpty(productId))
+            {
+                MessageBox.Show("Please enter a Product ID.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                // Send DELETE request to the API to delete the product
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://localhost:7201/api/product/"); // Your API base URL
+                    HttpResponseMessage response = await client.DeleteAsync($"delete/{productId}");
+
+                    // Check the response from the API
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Product deleted successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ClearFields();  // Clear fields after successful deletion
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to delete the product. " + response.ReasonPhrase, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
