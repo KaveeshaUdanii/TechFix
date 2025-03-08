@@ -24,7 +24,7 @@ namespace TechFixWinForms
     public partial class TechFixWindows : Form
     {
         private static readonly HttpClient client = new HttpClient();
-        
+
         public TechFixWindows()
         {
             InitializeComponent();
@@ -86,7 +86,7 @@ namespace TechFixWinForms
 
         private void guna2NumericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            
+
         }
 
         private void guna2ComboBox5_SelectedIndexChanged(object sender, EventArgs e)
@@ -96,7 +96,7 @@ namespace TechFixWinForms
 
         private async void guna2DataGridView1_CellContentClickAsync(object sender, DataGridViewCellEventArgs e)
         {
-            
+
         }
 
         private void guna2HtmlLabel10_Click(object sender, EventArgs e)
@@ -116,7 +116,7 @@ namespace TechFixWinForms
 
         private void guna2ComboBox4_SelectedIndexChanged(object sender, EventArgs e)
         {
-            
+
         }
 
         private async void addS_Click(object sender, EventArgs e)
@@ -154,16 +154,19 @@ namespace TechFixWinForms
                 if (response.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Supplier added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ClearSupplierFields();
                 }
                 else
                 {
                     string errorMessage = await response.Content.ReadAsStringAsync();
                     MessageBox.Show($"Failed to add supplier: {errorMessage}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ClearSupplierFields();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ClearSupplierFields();
             }
         }
 
@@ -190,7 +193,7 @@ namespace TechFixWinForms
             {
                 // Get input values
                 string categoryName = guna2TextBox9.Text.Trim();
-                
+
 
                 if (string.IsNullOrEmpty(categoryName))
                 {
@@ -202,7 +205,7 @@ namespace TechFixWinForms
                 var supplier = new
                 {
                     Name = categoryName,
-                   
+
                 };
 
                 string json = JsonConvert.SerializeObject(supplier);
@@ -228,7 +231,7 @@ namespace TechFixWinForms
             }
         }
 
-        
+
 
         private void CID_TextChanged(object sender, EventArgs e)
         {
@@ -361,53 +364,9 @@ namespace TechFixWinForms
 
 
         private void guna2ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {/*
-            LoadCategories();
-            if (guna2ComboBox1.SelectedItem != null)
-            {
-                // Get the selected category
-                string selectedCategory = guna2ComboBox1.SelectedItem.ToString();
-                MessageBox.Show("Selected Category: " + selectedCategory);
-            }*/
-        }
-        /*
-        private void LoadCategories()
         {
-            guna2ComboBox1.Items.Clear(); // Clear existing items before loading new ones
-
-            string connectionString = ConfigurationManager.ConnectionStrings["ConString"].ConnectionString;
-
-            try
-            {
-                using (SqlConnection con = new SqlConnection(connectionString))
-                {
-                    con.Open();
-                    string query = "SELECT Name FROM Category";
-
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                // Add the category names to the ComboBox
-                                guna2ComboBox1.Items.Add(reader["Name"].ToString());
-                            }
-
-                            // If items were added, set the first item as selected (optional)
-                            if (guna2ComboBox1.Items.Count > 0)
-                            {
-                                guna2ComboBox1.SelectedIndex = 0; // Automatically select the first item
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
-            }
-        }*/
+        }
+        
 
 
         private void guna2ComboBox2_SelectedIndexChanged_1(object sender, EventArgs e)
@@ -476,47 +435,16 @@ namespace TechFixWinForms
 
         private void guna2HtmlLabel23_Click(object sender, EventArgs e)
         {
-            
+
         }
 
 
 
         private void ProductID_SelectedIndexChanged(object sender, EventArgs e)
         {
-            
+
         }
 
-        /*
-private void LoadSuppliers()
-{
-guna2ComboBox2.Items.Clear(); // Clear existing items
-
-string connectionString = ConfigurationManager.ConnectionStrings["ConString"].ConnectionString;
-
-try
-{
-using (SqlConnection con = new SqlConnection(connectionString))
-{
-  con.Open();
-
-  string query = "SELECT Name FROM Supplier";
-  using (SqlCommand cmd = new SqlCommand(query, con))
-  {
-      using (SqlDataReader reader = cmd.ExecuteReader())
-      {
-          while (reader.Read())
-          {
-              guna2ComboBox2.Items.Add(reader["Name"].ToString());
-          }
-      }
-  }
-}
-}
-catch (Exception ex)
-{
-MessageBox.Show("Error: " + ex.Message);
-}
-}*/
 
 
         // display data ---------------------------------------------------------------------------------------------------
@@ -531,7 +459,7 @@ MessageBox.Show("Error: " + ex.Message);
                 con.Open();
 
                 // Prepare SQL query
-                string query = "SELECT * FROM Supplier"; 
+                string query = "SELECT * FROM Supplier";
                 SqlCommand cmd = new SqlCommand(query, con);
 
                 // Execute the query
@@ -741,7 +669,7 @@ MessageBox.Show("Error: " + ex.Message);
 
         public async Task LoadTotalOrders()
         {
-            string apiUrl = "https://localhost:7201/api/Order/total-orders";  
+            string apiUrl = "https://localhost:7201/api/Order/total-orders";
 
             try
             {
@@ -767,7 +695,7 @@ MessageBox.Show("Error: " + ex.Message);
         }
         public async Task LoadTotalSuppliers()
         {
-            string apiUrl = "https://localhost:7201/api/Supplier/total-suppliers";  
+            string apiUrl = "https://localhost:7201/api/Supplier/total-suppliers";
 
             try
             {
@@ -794,7 +722,7 @@ MessageBox.Show("Error: " + ex.Message);
 
         public async Task LoadTotalProducts()
         {
-            string apiUrl = "https://localhost:7201/api/Product/total-products";  
+            string apiUrl = "https://localhost:7201/api/Product/total-products";
 
             try
             {
@@ -825,7 +753,7 @@ MessageBox.Show("Error: " + ex.Message);
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    string apiUrl = "https://localhost:7201/api/Supplier/top-suppliers"; 
+                    string apiUrl = "https://localhost:7201/api/Supplier/top-suppliers";
                     HttpResponseMessage response = await client.GetAsync(apiUrl);
 
                     if (response.IsSuccessStatusCode)
@@ -901,6 +829,149 @@ MessageBox.Show("Error: " + ex.Message);
         private void guna2TextBox1_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private async void SearchSupplierButton_Click(object sender, EventArgs e)
+        {
+            string sid = SIDtextBox.Text.Trim();
+            if (string.IsNullOrEmpty(sid))
+            {
+                MessageBox.Show("Please enter a Supplier ID.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://localhost:7201/api/");
+                    HttpResponseMessage response = await client.GetAsync($"Supplier/get-supplier/{sid}");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string jsonData = await response.Content.ReadAsStringAsync();
+                        Supplier supplier = JsonConvert.DeserializeObject<Supplier>(jsonData);
+
+                        // Populate textboxes with supplier data
+                        txtSName.Text = supplier.Name;
+                        txtSEmail.Text = supplier.Email;
+                        txtSContact.Text = supplier.ContactNo;
+                    }
+                    else
+                    {
+                        string errorResponse = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show($"Supplier not found! Server Response: {errorResponse}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ClearSupplierFields();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error fetching supplier details: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ClearSupplierFields();
+            }
+        }
+
+        private void guna2Button3_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void ClearSupplierFields()
+        {
+            SIDtextBox.Clear();
+            txtSName.Clear();
+            txtSEmail.Clear();
+            txtSContact.Clear();
+        }
+
+        private async void UpdateSupplier_Click(object sender, EventArgs e)
+        {
+            string sid = SIDtextBox.Text.Trim();
+            if (string.IsNullOrEmpty(sid))
+            {
+                MessageBox.Show("Please enter a Supplier ID.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Create a supplier object with updated values
+            Supplier updatedSupplier = new Supplier
+            {
+                SID = sid,  // SID cannot be changed
+                Name = txtSName.Text.Trim(),
+                Email = txtSEmail.Text.Trim(),
+                ContactNo = txtSContact.Text.Trim()
+            };
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://localhost:7201/api/");
+                    string jsonData = JsonConvert.SerializeObject(updatedSupplier);
+                    StringContent content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+
+                    HttpResponseMessage response = await client.PutAsync($"Supplier/update-supplier/{sid}", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Supplier updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ClearSupplierFields();
+                    }
+                    else
+                    {
+                        string errorResponse = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show($"Failed to update supplier. Server Response: {errorResponse}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ClearSupplierFields();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error updating supplier details: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ClearSupplierFields();
+            }
+        }
+
+        private async void DeleteSupplier_Click(object sender, EventArgs e)
+        {
+            string sid = SIDtextBox.Text.Trim();
+            if (string.IsNullOrEmpty(sid))
+            {
+                MessageBox.Show("Please enter a Supplier ID.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            DialogResult confirm = MessageBox.Show("Are you sure you want to delete this supplier?", "Confirm Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (confirm == DialogResult.No)
+            {
+                return;
+            }
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://localhost:7201/api/");
+                    HttpResponseMessage response = await client.DeleteAsync($"Supplier/delete-supplier/{sid}");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Supplier deleted successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ClearSupplierFields(); // 🧹 Clear fields after deleting
+                    }
+                    else
+                    {
+                        string errorResponse = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show($"Failed to delete supplier. Server Response: {errorResponse}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ClearSupplierFields();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error deleting supplier: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ClearSupplierFields();
+            }
         }
     }
 }
