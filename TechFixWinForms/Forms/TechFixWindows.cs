@@ -59,6 +59,12 @@ namespace TechFixWinForms
             [JsonPropertyName("ContactNo")] // Ensure property name matches the JSON response
             public string ContactNo { get; set; }
         }
+        public class Category
+        {
+            public string CID { get; set; }  
+            public string Name { get; set; }
+        }
+
         private void tabPage2_Click(object sender, EventArgs e)
         {
 
@@ -218,16 +224,19 @@ namespace TechFixWinForms
                 if (response.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Category added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ClearCategoryTextBoxes();
                 }
                 else
                 {
                     string errorMessage = await response.Content.ReadAsStringAsync();
                     MessageBox.Show($"Failed to add category: {errorMessage}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ClearCategoryTextBoxes();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ClearCategoryTextBoxes();
             }
         }
 
@@ -971,6 +980,139 @@ namespace TechFixWinForms
             {
                 MessageBox.Show("Error deleting supplier: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 ClearSupplierFields();
+            }
+        }
+
+        private async void SearchP_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private async void SearchCategory_Click(object sender, EventArgs e)
+        {
+            string cid = CID.Text.Trim();  // Get the CID entered by Admin
+            if (string.IsNullOrEmpty(cid))
+            {
+                MessageBox.Show("Please enter a Category ID.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://localhost:7201/api/");  // Change to your API base address
+                    HttpResponseMessage response = await client.GetAsync($"Category/get-category/{cid}");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string jsonData = await response.Content.ReadAsStringAsync();
+                        Category category = JsonConvert.DeserializeObject<Category>(jsonData);
+
+                        // Fill the guna2TextBox9 with the category name
+                        guna2TextBox9.Text = category.Name;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Category not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error fetching category details: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async void UpdateCategory_Click(object sender, EventArgs e)
+        {
+            string cid = CID.Text.Trim();  // Get the CID entered by Admin
+            string categoryName = guna2TextBox9.Text.Trim();  // Get the category name entered in the textbox
+
+            if (string.IsNullOrEmpty(cid) || string.IsNullOrEmpty(categoryName))
+            {
+                MessageBox.Show("Please fill all the details.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                // Create the category object to send to the API
+                Category updatedCategory = new Category
+                {
+                    CID = cid,
+                    Name = categoryName
+                };
+
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://localhost:7201/api/");  // Change to your API base address
+
+                    // Make PUT request to the API with the updated category details
+                    HttpResponseMessage response = await client.PutAsJsonAsync($"Category/update-category/{cid}", updatedCategory);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Category updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        // Clear textboxes after successful update
+                        ClearCategoryTextBoxes();
+                    }
+                    else
+                    {
+                        string errorMessage = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error updating category: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        // Method to clear textboxes after the operation
+        private void ClearCategoryTextBoxes()
+        {
+            CID.Clear();
+            guna2TextBox9.Clear();
+        }
+
+        private async void DeleteCategory_Click(object sender, EventArgs e)
+        {
+            string cid = CID.Text.Trim();  // Get the CID entered by Admin
+
+            if (string.IsNullOrEmpty(cid))
+            {
+                MessageBox.Show("Please enter the Category ID.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://localhost:7201/api/");  // Change to your API base address
+
+                    // Make DELETE request to the API with the CID
+                    HttpResponseMessage response = await client.DeleteAsync($"Category/delete-category/{cid}");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Category deleted successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        // Clear textboxes after successful delete
+                        ClearCategoryTextBoxes();
+                    }
+                    else
+                    {
+                        string errorMessage = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error deleting category: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
