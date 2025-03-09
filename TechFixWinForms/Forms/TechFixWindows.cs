@@ -18,6 +18,7 @@ using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 using System.Net.Http.Json;
 using TechFixWinForms.Connection;
 using Guna.Charts.WinForms;
+using static Bunifu.Dataviz.WinForms.BunifuDatavizAdvanced;
 
 namespace TechFixWinForms
 {
@@ -38,6 +39,7 @@ namespace TechFixWinForms
             LoadTotalProducts();
             LoadTopSuppliersChart();
             LoadTopOrderedProductsChart();
+            LoadLowestStockProductsChart();
 
         }
 
@@ -453,6 +455,7 @@ namespace TechFixWinForms
                     MessageBox.Show("An error occurred: " + ex.Message);
                 }
             }
+
         }
 
         private void guna2HtmlLabel23_Click(object sender, EventArgs e)
@@ -847,6 +850,64 @@ namespace TechFixWinForms
                 MessageBox.Show("Error: " + ex.Message);
             }
         }
+
+        private async void LoadLowestStockProductsChart()
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    // URL of your API endpoint to get the lowest stock products
+                    string apiUrl = "https://localhost:7201/api/Product/lowest-stock-products";
+                    HttpResponseMessage response = await client.GetAsync(apiUrl);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Read the JSON response from the API
+                        string json = await response.Content.ReadAsStringAsync();
+
+                        // Deserialize the JSON response to a list of Product
+                        List<Product> lowestStockProducts = JsonConvert.DeserializeObject<List<Product>>(json);
+
+                        // Clear previous data in the chart
+                        gunaBubbleDataset1.DataPoints.Clear();
+                        gunaChart3.Datasets.Clear();
+
+                        // Add data points for the lowest stock products
+                        foreach (var product in lowestStockProducts)
+                        {
+                            // Create a new BubblePoint for the bubble chart
+                            BubblePoint point = new BubblePoint();
+                            point.X = product.Stock;  // X = Stock
+                            point.Y = product.Price;  // Y = Price
+                            point.Radius = 10;        // Radius = Bubble size (constant value)
+
+                            // Add the BubblePoint to the dataset
+                            gunaBubbleDataset1.DataPoints.Add(point);
+                        }
+
+                        // Add the dataset to the chart
+                        gunaChart3.Datasets.Add(gunaBubbleDataset1);
+
+                        // Refresh the chart to display the new data
+                        gunaChart3.Update();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to load lowest stock products.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+
+
+
+
+
 
         private void guna2TextBox1_TextChanged(object sender, EventArgs e)
         {
@@ -1342,6 +1403,26 @@ namespace TechFixWinForms
             {
                 MessageBox.Show("Error: " + ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void guna2HtmlLabel32_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void guna2Panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void gunaChart3_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void guna2Panel3_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }
