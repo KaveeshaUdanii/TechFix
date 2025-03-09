@@ -151,5 +151,22 @@ namespace TechFix_API.Controllers
         }
 
 
+        [HttpGet("lowest-stock-products")]
+        public async Task<IActionResult> GetLowestStockProducts()
+        {
+            var lowestStockProducts = await _context.Product
+                .OrderBy(p => p.Stock)  // Order by stock in ascending order
+                .Take(5)  // Get the top 5 products with the lowest stock
+                .Select(p => new
+                {
+                    p.Name,
+                    p.Stock
+                })
+                .ToListAsync();
+
+            return Ok(lowestStockProducts);
+        }
+
+
     }
 }
