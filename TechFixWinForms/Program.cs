@@ -17,7 +17,7 @@ namespace TechFixWinForms
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new TechFixWindows());
+            Application.Run(new AdminLoginForm());
         }
     }
 }
